@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <start-class>com.springboot.YourMainClass</start-class> <!-- Replace with your main class -->
+       <start-class>com.springboot.springbootproject.miniApp.MiniApp</start-class>
     </properties>
 
     <dependencies>
