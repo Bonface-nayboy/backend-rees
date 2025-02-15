@@ -23,4 +23,4 @@ RUN mvn package -DskipTests
 EXPOSE 8080
 
 # Start the application
-CMD ["java", "-jar", "target/your-app.jar"]
+CMD ["java", "-jar", "target/springbootproject-0.0.1-SNAPSHOT.jar"]
