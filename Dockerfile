@@ -1,26 +1,25 @@
-# Use Eclipse Temurin JDK as the base image
-FROM eclipse-temurin:21-jdk
+# # FROM maven 3.9.9-openjdk-21 AS build
+# FROM maven:3.9.9-eclipse-temurin-21 AS build
 
-# Set the working directory
+# COPY . .
+# RUN mvn clean package -DskipTests
+
+# FROM openjdk:21.0.4-jdk-slim
+# # COPY --FROM=build /target/springbootproject-0.0.1-SNAPSHOT.jar springbootproject.jar
+# COPY --from=build /target/springbootproject-0.0.1-SNAPSHOT.jar /springbootproject.jar
+
+# EXPOSE 8080
+# ENTRYPOINT ["java" ,"-jar" ,"springbootproject.jar"]
+
+# Build Stage
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
+COPY . .   # Copy everything (pom.xml, src/, etc.)
+RUN mvn clean package -DskipTests
 
-# Install Maven
-RUN apt-get update && apt-get install -y maven
-
-# Copy the Maven build file
-COPY pom.xml .
-
-# Download dependencies for offline usage
-RUN mvn dependency:go-offline -B
-
-# Copy the rest of the application files
-COPY . .
-
-# Build the application
-RUN mvn package -DskipTests
-
-# Expose the application port
+# Runtime Stage
+FROM openjdk:21.0.4-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/springbootproject-0.0.1-SNAPSHOT.jar /springbootproject.jar
 EXPOSE 8080
-
-# Start the application
-CMD ["java", "-jar", "target/springbootproject-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/springbootproject.jar"]
