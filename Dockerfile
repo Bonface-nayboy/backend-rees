@@ -26,13 +26,27 @@
 
 
 
+# FROM maven:3.8.5-openjdk-17 AS build
+# COPY . .   # Copy everything (pom.xml, src/, etc.)
+# RUN mvn clean package -DskipTests
+
+# # Runtime Stage
+# FROM openjdk:17.0.1-jdk-slim
+# COPY --from=build /app/target/springbootproject-0.0.1-SNAPSHOT.jar springbootproject.jar
+# EXPOSE 8080
+# ENTRYPOINT ["java", "-jar", "/springbootproject.jar"]
+
+
+# Build Stage
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
-COPY . .   # Copy everything (pom.xml, src/, etc.)
+COPY pom.xml .
+COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Runtime Stage
 FROM openjdk:17.0.1-jdk-slim
-COPY --from=build /app/target/springbootproject-0.0.1-SNAPSHOT.jar springbootproject.jar
+WORKDIR /app
+COPY --from=build /app/target/*.jar springbootproject.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/springbootproject.jar"]
